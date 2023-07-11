@@ -29,8 +29,11 @@ export class CreateOfferDTO {
     @ApiProperty({ example: "507f1f77bcf86cd799439011" })
     currencyId: string
   
-    @ApiProperty({ example: true })
+    @ApiProperty({ example: 15 })
     amount: number
+  
+    @ApiProperty({ example: 1245.65 })
+    unitPrice: number
 }
 
 export class UnlistOfferParams {
