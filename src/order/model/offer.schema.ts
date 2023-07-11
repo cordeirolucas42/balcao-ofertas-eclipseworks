@@ -7,7 +7,7 @@ import { Wallet } from 'src/database/model/wallet.schema';
 
 export type OfferDocument = HydratedDocument<Offer>;
 
-@Schema()
+@Schema({ timestamps: true})
 export class Offer {
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
     user: User;
@@ -22,9 +22,9 @@ export class Offer {
     amount: number;
 
     @Prop()
-    price: number;
+    unitPrice: number;
 
-    @Prop()
+    @Prop({ default: true })
     listed: boolean;
 }
 

@@ -24,14 +24,13 @@ export class DatabaseService implements OnModuleInit {
     await this.seedDB()
 
     // TEST
-    // const testUser = await this.userModel.findOne({ name: "Bertha Shepherd"}).exec()
-    // const testWallet = await this.walletModel.findOne({ user: testUser._id }).exec()
-    // // const testAssets = await this.assetModel.find({ wallet: { $in: testWallets.map(({ _id }) => (_id)) } }).exec()
-    // const testAssets = await this.assetModel.find({ wallet: testWallet._id }).populate([
-    //   { path: 'wallet', populate: 'user'},
-    //   { path: 'currency' },
-    // ]).exec()
-    // console.log(testAssets)
+    const testUser = await this.userModel.findOne({ name: 'Bertha Shepherd'}).exec()
+    const testWallet = await this.walletModel.findOne({ user: testUser._id }).exec()
+    const testAssets = await this.assetModel.find({ wallet: testWallet._id }).populate([
+      { path: 'wallet' },
+      { path: 'currency' },
+    ]).exec()
+    console.log(testAssets)
   }
 
   private async seedDB() {

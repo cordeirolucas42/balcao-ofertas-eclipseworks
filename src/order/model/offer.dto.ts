@@ -21,13 +21,13 @@ export class ListOffersParams {
 
 export class CreateOfferDTO {
     @ApiProperty({ example: "507f1f77bcf86cd799439011" })
-    userId: string
+    user: string
 
     @ApiProperty({ example: "507f1f77bcf86cd799439011" })
-    walletId: string
+    wallet: string
     
     @ApiProperty({ example: "507f1f77bcf86cd799439011" })
-    currencyId: string
+    currency: string
   
     @ApiProperty({ example: 15 })
     amount: number
