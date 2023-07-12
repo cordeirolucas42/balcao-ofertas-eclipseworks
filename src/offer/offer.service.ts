@@ -6,7 +6,7 @@ import * as mongoose from 'mongoose';
 import { Offer, OfferDocument } from './model/offer.schema';
 import { Asset } from 'src/database/model/asset.schema';
 import { endOfDay, startOfDay } from 'date-fns';
-import { Paginated } from 'src/common/pagination';
+import { Paginated, Pagination } from 'src/common/pagination';
 import { Wallet } from 'src/database/model/wallet.schema';
 import { User } from 'src/database/model/user.schema';
 
@@ -130,8 +130,24 @@ export class OfferService {
   }
 
   private async getPaginatedListedOffers(page: number, limit: number) {
-    // @TODO: PENDING IMPLEMENT PAGINATION
-    return this.getAllListedOffers()
+    const totalListedOffers = await this.countListedOffers()
+
+    const pagination = new Pagination(page, limit, totalListedOffers)
+
+    const offers = await this.generateListedOffersQuery()
+      .skip(pagination.skip)
+      .limit(limit)
+      .exec()
+
+    return {
+      data: offers,
+      currentPage: page,
+      lastPage: pagination.lastPage
+    }
+  }
+
+  private async countListedOffers() {
+    return this.offerModel.countDocuments({ listed: true }).exec()
   }
 
   private generateListedOffersQuery() {
@@ -140,7 +156,7 @@ export class OfferService {
     // ordem decrescente de criação
     return this.offerModel
       .find({ listed: true })
-      .select(propsToExclude)
+      .select(['-__v', '-listed', '-updatedAt'])
       .populate([
         { path: 'user', select: propsToExclude},
         { path: 'currency', select: propsToExclude}
@@ -205,7 +221,6 @@ export class OfferService {
         // }
       })
       .exec()
-    console.log('offersToday: ' + offersToday)
 
     if (offersToday >= MAX_OFFERS_PER_DAY) {
       throw new BadRequestException('Maximum amount of offers created per day reached')

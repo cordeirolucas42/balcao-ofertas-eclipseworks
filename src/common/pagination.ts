@@ -10,3 +10,17 @@ export class Paginated<T> {
     @ApiProperty({ example: 7 })
     lastPage?: number
 }
+
+export class Pagination {
+    public readonly skip: number
+    public readonly lastPage: number
+
+    public constructor(
+        private readonly page: number,
+        private readonly limit: number,
+        private readonly total: number,
+    ) {
+        this.skip = (this.page - 1) * this.limit
+        this.lastPage = Math.ceil(this.total/this.limit)
+    }
+}
