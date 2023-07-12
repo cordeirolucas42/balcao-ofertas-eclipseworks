@@ -42,7 +42,6 @@ export class OfferController {
     @Param() { offerId }: UnlistOfferParam,
     @Query() { userId }: UserIdParam
   ): Promise<void> {
-    console.log(offerId)
     return this.offerService.unlistOffer(userId, offerId)
   }
 }

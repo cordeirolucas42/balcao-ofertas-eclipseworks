@@ -1,5 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
-import { Validate } from 'class-validator'
+import { Transform } from 'class-transformer'
+import { IsBoolean, IsInt, IsNumber, IsPositive, Validate } from 'class-validator'
+import { stringToBoolean, stringToNumber } from 'src/common/dataTransformation'
 import { IsMongoObjectId } from 'src/common/objectIdValidation.pipe'
 
 export class UserIdParam {
@@ -16,17 +18,24 @@ export class UnlistOfferParam {
 
 export class ListOffersParams {
     @ApiProperty({ example: true })
+    @Transform(stringToBoolean)
+    @IsBoolean()
     paginated: boolean
   
-    @ApiPropertyOptional({ example: 2 })
+    @ApiPropertyOptional({ example: 1 })
+    @Transform(stringToNumber)
+    @IsInt()
+    @IsPositive()
     page?: number
   
-    @ApiPropertyOptional({ example: 10 })
+    @ApiPropertyOptional({ example: 5 })
+    @Transform(stringToNumber)
+    @IsInt()
+    @IsPositive()
     limit?: number
 }
 
 export class CreateOfferDTO {
-    // @TODO: data validation
     @ApiProperty({ example: '64add33781674cb2b11a7e22' })
     @Validate(IsMongoObjectId)
     walletId: string
@@ -36,9 +45,13 @@ export class CreateOfferDTO {
     currencyId: string
   
     @ApiProperty({ example: 15 })
+    @IsNumber()
+    @IsPositive()
     amount: number
   
     @ApiProperty({ example: 1245.65 })
+    @IsNumber()
+    @IsPositive()
     unitPrice: number
 }
 
