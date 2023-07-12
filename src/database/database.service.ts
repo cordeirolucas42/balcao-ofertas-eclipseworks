@@ -5,6 +5,7 @@ import { Currency } from './model/currency.schema';
 import { User } from './model/user.schema';
 import { Wallet } from './model/wallet.schema';
 import { Asset } from './model/asset.schema';
+import { Offer } from 'src/offer/model/offer.schema';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -12,12 +13,13 @@ export class DatabaseService implements OnModuleInit {
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Wallet.name) private walletModel: Model<Wallet>,
     @InjectModel(Currency.name) private currencyModel: Model<Currency>,
-    @InjectModel(Asset.name) private assetModel: Model<Asset>
+    @InjectModel(Asset.name) private assetModel: Model<Asset>,
+    @InjectModel(Offer.name) private offerModel: Model<Offer>,
   ) {}
   
   async onModuleInit() {
     // seed DB
-    if (process.env.DB_SEED !== "1") {
+    if (process.env.DB_SEED !== '1') {
       return
     }
 
@@ -39,14 +41,15 @@ export class DatabaseService implements OnModuleInit {
     await this.walletModel.deleteMany({}).exec()
     await this.currencyModel.deleteMany({}).exec()
     await this.assetModel.deleteMany({}).exec()
+    await this.offerModel.deleteMany({}).exec()
 
     // CREATE CURRENCIES
     const currenciesSeed = [
-      { name: "Bitcoin" },
-      { name: "Dogecoin" },
-      { name: "Ethereum" },
-      { name: "Avalanche" },
-      { name: "Zcash" },
+      { name: 'Bitcoin' },
+      { name: 'Dogecoin' },
+      { name: 'Ethereum' },
+      { name: 'Avalanche' },
+      { name: 'Zcash' },
     ]
 
     // SEED CURRENCY
@@ -57,11 +60,11 @@ export class DatabaseService implements OnModuleInit {
     // CREATE USERS
     const usersSeed = [
       {
-        name: "Bertha Shepherd",
+        name: 'Bertha Shepherd',
         wallets: []
       },
       {
-        name: "Rufus Shaffer",
+        name: 'Rufus Shaffer',
         wallets: []
       }
     ]
@@ -103,6 +106,6 @@ export class DatabaseService implements OnModuleInit {
     // SEED ASSETS
     await this.assetModel.insertMany(assetsSeed)
 
-    console.log("seed db");
+    console.log('seed db');
   }
 }

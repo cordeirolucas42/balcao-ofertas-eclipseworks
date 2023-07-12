@@ -5,6 +5,7 @@ import { Currency, CurrencySchema } from './model/currency.schema';
 import { User, UserSchema } from './model/user.schema';
 import { Wallet, WalletSchema } from './model/wallet.schema';
 import { Asset, AssetSchema } from './model/asset.schema';
+import { Offer, OfferSchema } from 'src/offer/model/offer.schema';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { Asset, AssetSchema } from './model/asset.schema';
         { name: Wallet.name, schema: WalletSchema },
         { name: Currency.name, schema: CurrencySchema },
         { name: Asset.name, schema: AssetSchema },
+        { name: Offer.name, schema: OfferSchema }
     ])
   ],
   providers: [DatabaseService]

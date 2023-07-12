@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { OfferModule } from './order/offer.module';
+import { OfferModule } from './offer/offer.module';
 import { DatabaseModule } from './database/database.module';
 
 @Module({
