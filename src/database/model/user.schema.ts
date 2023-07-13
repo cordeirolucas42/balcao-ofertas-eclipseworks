@@ -4,7 +4,7 @@ import * as mongoose from 'mongoose';
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema({ timestamps: true})
+@Schema({ timestamps: true, id: false, toJSON: { virtuals: true } })
 export class User {
     _id: mongoose.Schema.Types.ObjectId;
 
@@ -13,3 +13,9 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)
+
+UserSchema.virtual('wallets', {
+    ref: 'Wallet',
+    localField: '_id',
+    foreignField: 'user'
+});

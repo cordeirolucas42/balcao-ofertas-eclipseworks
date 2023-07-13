@@ -4,7 +4,7 @@ import * as mongoose from 'mongoose';
 
 export type CurrencyDocument = HydratedDocument<Currency>;
 
-@Schema({ timestamps: true})
+@Schema({ timestamps: true, id: false })
 export class Currency {
     _id?: mongoose.Schema.Types.ObjectId
 

@@ -6,7 +6,7 @@ import { Wallet } from './wallet.schema';
 
 export type AssetDocument = HydratedDocument<Asset>;
 
-@Schema({ timestamps: true})
+@Schema({ timestamps: true, id: false })
 export class Asset {
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Wallet' })
     wallet: Wallet;

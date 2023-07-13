@@ -7,7 +7,6 @@ import { Wallet } from './model/wallet.schema';
 import { Asset } from './model/asset.schema';
 import { Offer } from 'src/offer/model/offer.schema';
 import * as fs from 'fs/promises';
-import { UserInfo } from './model/user.dto';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -118,9 +117,10 @@ export class DatabaseService implements OnModuleInit {
     await this.offerModel.insertMany(offersSeed)
 
     // Log database into 'seedInfo.json' file    
-    const data = await this.getAllData()
+    const allUsers = await this.getAllUsers()
+    const allOffers = await this.getAllOffers()
     const stringifiedData = JSON.stringify(
-      data,
+      { users: allUsers, offers: allOffers },
       undefined,
       2
     )
@@ -128,59 +128,50 @@ export class DatabaseService implements OnModuleInit {
 
     console.log('seed db');
   }
-  
-  private async getAllData() {
-    const allAssets = await this.assetModel
+
+  private async getAllUsers() {
+    const propsToRemove = ['-__v', '-updatedAt']
+    const allUsers = await this.userModel
       .find({})
-      .populate([{ path: 'wallet', populate: 'user' }, 'currency'])
+      .select(propsToRemove)
+      .populate({
+        path: 'wallets',
+        select: propsToRemove,
+        populate: {
+          path: 'assets',
+          select: propsToRemove,
+          populate: {
+            path: 'currency',
+            select: propsToRemove
+          }
+        }
+      })
       .exec()
 
-    const allUsers: UserInfo[] = []
-    allAssets.forEach((asset) => {
-      const assetInfo = {
-        _id: asset._id.toString(),
-        currency: {
-          _id: asset.currency._id.toString(),
-          name: asset.currency.name,
+    return allUsers
+  }
+
+  private async getAllOffers() {
+    const propsToRemove = ['-__v', '-updatedAt']
+    const allOffers = await this.offerModel
+      .find({})
+      .select(propsToRemove)
+      .populate([
+        {
+          path: 'user',
+          select: propsToRemove
         },
-        amount: asset.amount
-      }
+        {
+          path: 'wallet',
+          select: [...propsToRemove, '-user']
+        },
+        {
+          path: 'currency',
+          select: propsToRemove
+        },
+      ])
+      .exec()
 
-      const userIds = allUsers.map(({ _id }) => _id.toString())
-      if (!userIds.includes(asset.wallet.user._id.toString())) {
-        allUsers.push({
-          _id: asset.wallet.user._id.toString(),
-          name: asset.wallet.user.name,
-          wallets: [{
-            _id: asset.wallet._id.toString(),
-            name: asset.wallet.name,
-            assets: [assetInfo]
-          }]
-        })
-
-        return
-      }
-
-      const userInfo = allUsers.find(
-        user => user._id === asset.wallet.user._id.toString()
-      )
-      const walletIds = userInfo.wallets.map(({ _id }) => _id)
-      if (!walletIds.includes(asset.wallet._id.toString())) {
-        userInfo.wallets.push({
-          _id: asset.wallet._id.toString(),
-          name: asset.wallet.name,
-          assets: [assetInfo]
-        })
-
-        return
-      }
-
-      const walletInfo = userInfo.wallets.find(
-        wallet => wallet._id === asset.wallet._id.toString()
-      )
-      walletInfo.assets.push(assetInfo)
-    })
-
-    return { users: allUsers }
+    return allOffers
   }
 }

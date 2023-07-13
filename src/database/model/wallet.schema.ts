@@ -5,7 +5,7 @@ import { User } from './user.schema';
 
 export type WalletDocument = HydratedDocument<Wallet>;
 
-@Schema({ timestamps: true})
+@Schema({ timestamps: true, id: false, toJSON: { virtuals: true } })
 export class Wallet {
     _id?: mongoose.Schema.Types.ObjectId
 
@@ -17,3 +17,9 @@ export class Wallet {
 }
 
 export const WalletSchema = SchemaFactory.createForClass(Wallet)
+
+WalletSchema.virtual('assets', {
+    ref: 'Asset',
+    localField: '_id',
+    foreignField: 'wallet'
+});
