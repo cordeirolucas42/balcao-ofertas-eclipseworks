@@ -12,13 +12,6 @@ export class OfferController {
     private readonly offerService: OfferService
   ) {}
 
-  // FOR TESTS
-  @Get('test-all-info')
-  @ApiResponse({ isArray: true, type: UserInfo })
-  async getAllInfo(): Promise<UserInfo[]> {
-    return this.offerService.getAllInfo()
-  }
-
   @Get()
   @ApiResponse({ isArray: true, type: Offer })
   async listOffers(

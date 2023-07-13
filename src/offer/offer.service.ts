@@ -1,14 +1,14 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { CreateOfferDTO, ListOffersParams, OfferId, UserInfo } from './model/offer.dto';
+import { CreateOfferDTO, ListOffersParams, OfferId } from './model/offer.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import * as mongoose from 'mongoose';
 import { Offer, OfferDocument } from './model/offer.schema';
 import { Asset } from 'src/database/model/asset.schema';
 import { endOfDay, startOfDay } from 'date-fns';
 import { Paginated, Pagination } from 'src/common/pagination';
 import { Wallet } from 'src/database/model/wallet.schema';
 import { User } from 'src/database/model/user.schema';
+import { Currency } from 'src/database/model/currency.schema';
 
 const MAX_OFFERS_PER_DAY = 5
 const ITEMS_PER_PAGE = 2
@@ -18,66 +18,16 @@ export class OfferService {
   constructor(
     @InjectModel(Offer.name) private offerModel: Model<Offer>,
     @InjectModel(Asset.name) private assetModel: Model<Asset>,
-    @InjectModel(Wallet.name) private walletModel: Model<Wallet>
+    @InjectModel(Wallet.name) private walletModel: Model<Wallet>,
+    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Currency.name) private currencyModel: Model<Currency>,
   ) {}
-
-  // FOR TESTS
-  public async getAllInfo() {
-    const allAssets = await this.assetModel
-      .find({})
-      .populate([{ path: 'wallet', populate: 'user' }, 'currency'])
-      .exec()
-
-    const allUsers: UserInfo[] = []
-    allAssets.forEach((asset) => {
-      const assetInfo = {
-        _id: asset._id.toString(),
-        currency: {
-          _id: asset.currency._id.toString(),
-          name: asset.currency.name,
-        },
-        amount: asset.amount
-      }
-
-      const userIds = allUsers.map(({ _id }) => _id.toString())
-      if (!userIds.includes(asset.wallet.user._id.toString())) {
-        allUsers.push({
-          _id: asset.wallet.user._id.toString(),
-          name: asset.wallet.user.name,
-          wallets: [{
-            _id: asset.wallet._id.toString(),
-            assets: [assetInfo]
-          }]
-        })
-
-        return
-      }
-
-      const userInfo = allUsers.find(
-        user => user._id === asset.wallet.user._id.toString()
-      )
-      const walletIds = userInfo.wallets.map(({ _id }) => _id)
-      if (!walletIds.includes(asset.wallet._id.toString())) {
-        userInfo.wallets.push({
-          _id: asset.wallet._id.toString(),
-          assets: [assetInfo]
-        })
-
-        return
-      }
-
-      const walletInfo = userInfo.wallets.find(
-        wallet => wallet._id === asset.wallet._id.toString()
-      )
-      walletInfo.assets.push(assetInfo)
-    })
-
-    return allUsers
-  }
 
   public async listOffers(
     userId: string, listOffersParams: ListOffersParams
   ): Promise<Paginated<Offer>> {
+    // not constrained by userId
+    // dia atual (ofertas antigas expiram de um dia para o outro)
     const { paginated, page = 1, limit = ITEMS_PER_PAGE } = listOffersParams
 
     // scroll
@@ -97,8 +47,11 @@ export class OfferService {
   public async createOffer(
     userId: string, createOfferDTO: CreateOfferDTO
   ): Promise<OfferId> {
+    // conferir se os ids correspondem a documentos
+    await this.checkIdsInCreateOfferDTO(createOfferDTO)
+
     // conferir se é o usuário certo
-    await this.checkIfUserOwnsWallet(userId, createOfferDTO.walletId);
+    await this.checkIfUserOwnsWallet(userId, createOfferDTO.walletId)
 
     // precisa ter saldo suficiente de uma currency em uma wallet, levando em conta as ofertas listadas
     await this.checkEnoughBalance(createOfferDTO)
@@ -112,7 +65,6 @@ export class OfferService {
   public async unlistOffer(
     userId: string, offerId: string
   ): Promise<void> {
-    this.checkIfValidId(offerId)
     const offerToUnlist = await this.getOfferById(offerId)
 
     // somente criador da oferta pode unlist
@@ -121,6 +73,20 @@ export class OfferService {
 
     // soft-delete, não remove do BD
     await this.softDeleteOffer(offerToUnlist)
+  }
+
+  private async checkIdsInCreateOfferDTO(createOfferDTO: CreateOfferDTO) {
+    const { walletId, currencyId } = createOfferDTO
+
+    await this.checkExistingId(this.walletModel, walletId)
+    await this.checkExistingId(this.currencyModel, currencyId)
+  }
+
+  private async checkExistingId<T>(model: Model<T>, id: string) {
+    const document = await model.findById(id).exec()
+    if (!document) {
+      throw new BadRequestException(`Id ${id} does not correspond to any document`)
+    }
   }
 
   private async getAllListedOffers() {
@@ -153,8 +119,15 @@ export class OfferService {
     const propsToExclude = ['-__v', '-createdAt', '-updatedAt']
 
     // ordem decrescente de criação
+    // exibe apenas ofertas criadas hoje
     return this.offerModel
-      .find({ listed: true })
+      .find({
+        listed: true,
+        createdAt: {
+          $gte: startOfDay(new Date()),
+          $lte: endOfDay(new Date())
+        }
+      })
       .select(['-__v', '-listed', '-updatedAt'])
       .populate([
         { path: 'user', select: propsToExclude},
@@ -166,6 +139,8 @@ export class OfferService {
   private async checkIfUserOwnsWallet(
     userId: string, offerWalletId: string
   ) {
+    await this.checkExistingId(this.userModel, userId)
+
     const walletOwner = await this.getWalletOwner(offerWalletId)
     if (walletOwner._id.toString() !== userId) {
       throw new UnauthorizedException('User does not own wallet');
@@ -200,6 +175,10 @@ export class OfferService {
     const asset = await this.assetModel
       .findOne({ wallet: walletId, currency: currencyId })
       .exec()
+
+    if (!asset) {
+      throw new BadRequestException('Not enough balance')
+    }
 
     const totalOffered = await this.getTotalOfferedByAsset(walletId, currencyId)
     console.log("totalOffered: " + totalOffered)
@@ -239,7 +218,6 @@ export class OfferService {
   }
 
   private async getOfferById(offerId: string) {
-
     const offer = await this.offerModel
       .findById(offerId)
       .populate(['user', 'wallet'])
@@ -250,12 +228,6 @@ export class OfferService {
     }
     
     return offer
-  }
-
-  private checkIfValidId(id: string) {
-    if (!mongoose.isValidObjectId(id)) {
-      throw new BadRequestException(id + ' is not a valid id');
-    }
   }
 
   private checkIfUserOwnsOffer(
