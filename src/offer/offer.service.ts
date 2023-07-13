@@ -3,12 +3,12 @@ import { CreateOfferDTO, ListOffersParams, OfferId } from './model/offer.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Offer, OfferDocument } from './model/offer.schema';
-import { Asset } from 'src/database/model/asset.schema';
+import { Asset } from '../database/model/asset.schema';
 import { endOfDay, startOfDay } from 'date-fns';
-import { Paginated, Pagination } from 'src/common/pagination';
-import { Wallet } from 'src/database/model/wallet.schema';
-import { User } from 'src/database/model/user.schema';
-import { Currency } from 'src/database/model/currency.schema';
+import { Paginated, Pagination } from '../common/pagination';
+import { Wallet } from '../database/model/wallet.schema';
+import { User } from '../database/model/user.schema';
+import { Currency } from '../database/model/currency.schema';
 
 const MAX_OFFERS_PER_DAY = 5
 const ITEMS_PER_PAGE = 2
@@ -19,14 +19,13 @@ export class OfferService {
     @InjectModel(Offer.name) private offerModel: Model<Offer>,
     @InjectModel(Asset.name) private assetModel: Model<Asset>,
     @InjectModel(Wallet.name) private walletModel: Model<Wallet>,
-    @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Currency.name) private currencyModel: Model<Currency>,
   ) {}
 
   public async listOffers(
     userId: string, listOffersParams: ListOffersParams
   ): Promise<Paginated<Offer>> {
-    // not constrained by userId
+    // não depende de userId, mas disponível para futuro
     const { paginated, page = 1, limit = ITEMS_PER_PAGE } = listOffersParams
 
     // scroll
@@ -64,6 +63,7 @@ export class OfferService {
   public async unlistOffer(
     userId: string, offerId: string
   ): Promise<void> {
+    // offerId precisa corresponder a uma oferta
     const offerToUnlist = await this.getOfferById(offerId)
 
     // somente criador da oferta pode soft-delete
@@ -138,8 +138,6 @@ export class OfferService {
   private async checkIfUserOwnsWallet(
     userId: string, offerWalletId: string
   ) {
-    await this.checkExistingId(this.userModel, userId)
-
     const walletOwner = await this.getWalletOwner(offerWalletId)
     if (walletOwner._id.toString() !== userId) {
       throw new UnauthorizedException('User does not own wallet');

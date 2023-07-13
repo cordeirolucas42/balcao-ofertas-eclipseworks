@@ -3,7 +3,7 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OfferService } from './offer.service';
 import { CreateOfferDTO, ListOffersParams, OfferId, UnlistOfferParam, UserIdParam } from './model/offer.dto';
 import { Offer } from './model/offer.schema';
-import { Paginated } from 'src/common/pagination';
+import { Paginated } from '../common/pagination';
 
 @Controller('offer')
 @ApiTags('Offer')
@@ -32,8 +32,8 @@ export class OfferController {
 
   @Delete(':offerId')
   async unlistOffer(
-    @Param() { offerId }: UnlistOfferParam,
-    @Query() { userId }: UserIdParam
+    @Query() { userId }: UserIdParam,
+    @Param() { offerId }: UnlistOfferParam
   ): Promise<void> {
     return this.offerService.unlistOffer(userId, offerId)
   }

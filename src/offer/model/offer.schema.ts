@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import * as mongoose from 'mongoose';
-import { Currency } from 'src/database/model/currency.schema';
-import { User } from 'src/database/model/user.schema';
-import { Wallet } from 'src/database/model/wallet.schema';
+import { Currency } from '../../database/model/currency.schema';
+import { User } from '../../database/model/user.schema';
+import { Wallet } from '../../database/model/wallet.schema';
 
 export type OfferDocument = HydratedDocument<Offer>;
 

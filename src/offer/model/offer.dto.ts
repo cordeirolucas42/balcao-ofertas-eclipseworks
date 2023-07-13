@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Transform } from 'class-transformer'
 import { IsBoolean, IsInt, IsNumber, IsPositive, Validate } from 'class-validator'
-import { stringToBoolean, stringToNumber } from 'src/common/dataTransformation'
-import { IsMongoObjectId } from 'src/common/objectIdValidation.pipe'
+import { stringToBoolean, stringToNumber } from '../../common/dataTransformation'
+import { IsMongoObjectId } from '../../common/objectIdValidation.pipe'
 
 export class UserIdParam {
     @ApiProperty({ example: '64add33781674cb2b11a7e22' })
