@@ -67,7 +67,7 @@ export class OfferService {
     const offerToUnlist = await this.getOfferById(offerId)
 
     // somente criador da oferta pode soft-delete
-    const offerUserId = offerToUnlist.user._id.toString()
+    const offerUserId = offerToUnlist.user.toString()
     this.checkIfUserOwnsOffer(userId, offerUserId);
 
     // soft-delete, não remove do BD
@@ -130,6 +130,7 @@ export class OfferService {
       .select(['-__v', '-listed', '-updatedAt'])
       .populate([
         { path: 'user', select: propsToExclude},
+        { path: 'wallet', select: propsToExclude},
         { path: 'currency', select: propsToExclude}
       ])
       .sort({ createdAt: -1 })
@@ -216,7 +217,6 @@ export class OfferService {
   private async getOfferById(offerId: string) {
     const offer = await this.offerModel
       .findById(offerId)
-      .populate(['user', 'wallet'])
       .exec()
     
     if (!offer) {
