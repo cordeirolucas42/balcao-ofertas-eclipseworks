@@ -8,7 +8,6 @@ export class IsMongoObjectId implements ValidatorConstraintInterface {
   }
 
   defaultMessage(args: ValidationArguments) {
-    // here you can provide default error message if validation failed
     return '$value is not a valid $property';
   }
 }

@@ -100,8 +100,7 @@ export class OfferService {
     // conferir se é o usuário certo
     await this.checkIfUserOwnsWallet(userId, createOfferDTO.walletId);
 
-    // precisa ter saldo suficiente de uma currency em uma wallet
-    // @TODO: subtrair ofertas listadas do saldo
+    // precisa ter saldo suficiente de uma currency em uma wallet, levando em conta as ofertas listadas
     await this.checkEnoughBalance(createOfferDTO)
 
     // máximo de 5 ofertas por dia
@@ -184,9 +183,6 @@ export class OfferService {
 
   private async createOfferFromDTO(userId: string, createOfferDTO: CreateOfferDTO) {
     const { walletId, currencyId, amount, unitPrice } = createOfferDTO
-
-    // const offerToCreate = this.offerAdaptor(userId, createOfferDTO)
-    // const createdOffer = new this.offerModel(offerToCreate)
     const createdOffer = new this.offerModel({
       user: userId,
       wallet: walletId,
@@ -205,9 +201,24 @@ export class OfferService {
       .findOne({ wallet: walletId, currency: currencyId })
       .exec()
 
-    if (amount > asset.amount) {
+    const totalOffered = await this.getTotalOfferedByAsset(walletId, currencyId)
+    console.log("totalOffered: " + totalOffered)
+
+    if (amount > (asset.amount - totalOffered)) {
       throw new BadRequestException('Not enough balance')
     }
+  }
+
+  private async getTotalOfferedByAsset(walletId: string, currencyId: string) {
+    const offers = await this.offerModel
+      .find({ wallet: walletId, currency: currencyId })
+      .exec()
+
+    const offerTotal = offers.reduce((sum, offer) => {
+      return sum + offer.amount
+    }, 0)
+
+    return offerTotal
   }
 
   private async checkMaxOffersPerDay(userId: string) {
@@ -215,27 +226,15 @@ export class OfferService {
       .countDocuments({
         user: userId,
         listed: true,
-        // createdAt:  {
-        //   $gte: startOfDay(new Date()),
-        //   $lte: endOfDay(new Date())
-        // }
+        createdAt:  {
+          $gte: startOfDay(new Date()),
+          $lte: endOfDay(new Date())
+        }
       })
       .exec()
 
     if (offersToday >= MAX_OFFERS_PER_DAY) {
       throw new BadRequestException('Maximum amount of offers created per day reached')
-    }
-  }
-
-  private offerAdaptor(userId: string, createOfferDTO: CreateOfferDTO) {
-    const { walletId, currencyId, amount, unitPrice } = createOfferDTO
-
-    return {
-      user: userId,
-      wallet: walletId,
-      currency: currencyId,
-      amount,
-      unitPrice
     }
   }
 
