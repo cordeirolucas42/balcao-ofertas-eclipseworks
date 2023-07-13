@@ -180,7 +180,6 @@ export class OfferService {
     }
 
     const totalOffered = await this.getTotalOfferedByAsset(walletId, currencyId)
-    console.log("totalOffered: " + totalOffered)
 
     if (amount > (asset.amount - totalOffered)) {
       throw new BadRequestException('Not enough balance')

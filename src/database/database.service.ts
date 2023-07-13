@@ -7,7 +7,7 @@ import { Wallet } from './model/wallet.schema';
 import { Asset } from './model/asset.schema';
 import { Offer } from 'src/offer/model/offer.schema';
 import * as fs from 'fs/promises';
-import { UserInfo } from 'src/offer/model/offer.dto';
+import { UserInfo } from './model/user.dto';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {

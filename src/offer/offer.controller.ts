@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post, Delete, Query } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OfferService } from './offer.service';
-import { CreateOfferDTO, ListOffersParams, OfferId, UnlistOfferParam, UserIdParam, UserInfo } from './model/offer.dto';
+import { CreateOfferDTO, ListOffersParams, OfferId, UnlistOfferParam, UserIdParam } from './model/offer.dto';
 import { Offer } from './model/offer.schema';
 import { Paginated } from 'src/common/pagination';
 
