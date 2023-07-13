@@ -27,7 +27,6 @@ export class OfferService {
     userId: string, listOffersParams: ListOffersParams
   ): Promise<Paginated<Offer>> {
     // not constrained by userId
-    // dia atual (ofertas antigas expiram de um dia para o outro)
     const { paginated, page = 1, limit = ITEMS_PER_PAGE } = listOffersParams
 
     // scroll
@@ -53,10 +52,10 @@ export class OfferService {
     // conferir se é o usuário certo
     await this.checkIfUserOwnsWallet(userId, createOfferDTO.walletId)
 
-    // precisa ter saldo suficiente de uma currency em uma wallet, levando em conta as ofertas listadas
+    // precisa ter saldo suficiente de uma moeda em uma carteira, levando em conta as ofertas listadas
     await this.checkEnoughBalance(createOfferDTO)
 
-    // máximo de 5 ofertas por dia
+    // máximo de 5 ofertas por dia por usuário
     await this.checkMaxOffersPerDay(userId)
 
     return this.createOfferFromDTO(userId, createOfferDTO)
@@ -67,7 +66,7 @@ export class OfferService {
   ): Promise<void> {
     const offerToUnlist = await this.getOfferById(offerId)
 
-    // somente criador da oferta pode unlist
+    // somente criador da oferta pode soft-delete
     const offerUserId = offerToUnlist.user._id.toString()
     this.checkIfUserOwnsOffer(userId, offerUserId);
 

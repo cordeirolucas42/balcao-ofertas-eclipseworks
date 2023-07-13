@@ -20,16 +20,15 @@ export class DatabaseService implements OnModuleInit {
   ) {}
   
   async onModuleInit() {
-    // seed DB
     if (process.env.DB_SEED !== '1') {
       return
     }
 
+    // seed DB
     await this.seedDB()
   }
 
   private async seedDB() {
-    // if needed to clear db
     await this.userModel.deleteMany({}).exec()
     await this.walletModel.deleteMany({}).exec()
     await this.currencyModel.deleteMany({}).exec()
