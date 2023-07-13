@@ -23,6 +23,9 @@ export class WalletInfo {
     @ApiProperty({ example: '64add7fdac9cabae1b6fdc83' })
     _id: string
 
+    @ApiProperty({ example: 'Wallet 1' })
+    name: string
+
     @ApiProperty({ type: AssetInfo, isArray: true })
     assets: AssetInfo[]
 }

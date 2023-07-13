@@ -65,11 +65,11 @@ export class DatabaseService implements OnModuleInit {
 
     // CREATE WALLETS
     const walletsSeed: Wallet[] = [
-      { user: users[0] },
-      { user: users[0] },
-      { user: users[2] },
-      { user: users[1] },
-      { user: users[1] }
+      { user: users[0], name: "Carteira 1" },
+      { user: users[0], name: "Carteira 2" },
+      { user: users[2], name: "Investimentos" },
+      { user: users[1], name: "Main wallet" },
+      { user: users[1], name: "Wallet savings" }
     ]
 
     // SEED WALLETS
@@ -153,6 +153,7 @@ export class DatabaseService implements OnModuleInit {
           name: asset.wallet.user.name,
           wallets: [{
             _id: asset.wallet._id.toString(),
+            name: asset.wallet.name,
             assets: [assetInfo]
           }]
         })
@@ -167,6 +168,7 @@ export class DatabaseService implements OnModuleInit {
       if (!walletIds.includes(asset.wallet._id.toString())) {
         userInfo.wallets.push({
           _id: asset.wallet._id.toString(),
+          name: asset.wallet.name,
           assets: [assetInfo]
         })
 
