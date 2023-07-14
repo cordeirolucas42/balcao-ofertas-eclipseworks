@@ -1,16 +1,35 @@
-import { Body, Controller, Get, Param, Post, Delete, Query, HttpStatus } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Delete,
+  Query
+} from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse
+} from '@nestjs/swagger';
 import { OfferService } from './offer.service';
-import { CreateOfferDTO, ListOffersParams, OfferDTO, OfferId, UnlistOfferParam, UserIdParam } from './model/offer.dto';
+import {
+  CreateOfferDTO,
+  ListOffersParams,
+  OfferDTO,
+  UnlistOfferParam,
+  UserIdParam
+} from './model/offer.dto';
 import { Offer } from './model/offer.schema';
 import { Paginated } from '../common/pagination';
 
 @Controller('offer')
 @ApiTags('Offer')
 export class OfferController {
-  constructor(
-    private readonly offerService: OfferService
-  ) {}
+  constructor(private readonly offerService: OfferService) {}
 
   @Get()
   @ApiOkResponse({ isArray: true, type: OfferDTO })
@@ -19,7 +38,7 @@ export class OfferController {
     @Query() { userId }: UserIdParam,
     @Query() listOffersParams: ListOffersParams
   ): Promise<Paginated<Offer>> {
-    return this.offerService.listOffers(userId, listOffersParams)
+    return this.offerService.listOffers(userId, listOffersParams);
   }
 
   @Post()
@@ -27,13 +46,15 @@ export class OfferController {
   @ApiBadRequestResponse({ description: 'Incorrect parameter or body types' })
   @ApiNotFoundResponse({ description: 'There is no document with Id' })
   @ApiUnauthorizedResponse({ description: 'User does not own wallet' })
-  @ApiForbiddenResponse({ description: 'Maximum amount of offers created per day reached' })
+  @ApiForbiddenResponse({
+    description: 'Maximum amount of offers created per day reached'
+  })
   @ApiForbiddenResponse({ description: 'Not enough balance' })
   async createOffer(
     @Query() { userId }: UserIdParam,
     @Body() createOfferDTO: CreateOfferDTO
   ): Promise<Offer> {
-    return this.offerService.createOffer(userId, createOfferDTO)
+    return this.offerService.createOffer(userId, createOfferDTO);
   }
 
   @Delete(':offerId')
@@ -45,6 +66,6 @@ export class OfferController {
     @Query() { userId }: UserIdParam,
     @Param() { offerId }: UnlistOfferParam
   ): Promise<void> {
-    return this.offerService.unlistOffer(userId, offerId)
+    return this.offerService.unlistOffer(userId, offerId);
   }
 }

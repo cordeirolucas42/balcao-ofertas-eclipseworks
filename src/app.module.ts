@@ -10,6 +10,6 @@ import { DatabaseModule } from './database/database.module';
     MongooseModule.forRoot(process.env.DB_URL, { dbName: process.env.DB_NAME }),
     OfferModule,
     DatabaseModule
-  ],
+  ]
 })
 export class AppModule {}

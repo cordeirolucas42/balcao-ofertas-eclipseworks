@@ -10,11 +10,11 @@ import { Offer, OfferSchema } from 'src/offer/model/offer.schema';
 @Module({
   imports: [
     MongooseModule.forFeature([
-        { name: User.name, schema: UserSchema },
-        { name: Wallet.name, schema: WalletSchema },
-        { name: Currency.name, schema: CurrencySchema },
-        { name: Asset.name, schema: AssetSchema },
-        { name: Offer.name, schema: OfferSchema }
+      { name: User.name, schema: UserSchema },
+      { name: Wallet.name, schema: WalletSchema },
+      { name: Currency.name, schema: CurrencySchema },
+      { name: Asset.name, schema: AssetSchema },
+      { name: Offer.name, schema: OfferSchema }
     ])
   ],
   providers: [DatabaseService]
