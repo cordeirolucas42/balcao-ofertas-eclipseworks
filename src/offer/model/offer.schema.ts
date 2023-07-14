@@ -9,64 +9,64 @@ import { ApiProperty } from '@nestjs/swagger';
 
 // query params
 export const offersListed = {
-    listed: true
-}
+  listed: true
+};
 
 export const offersCreatedBy = (userId: string) => ({
-    user: userId
-})
+  user: userId
+});
 
 export const offersCreatedToday = {
-    createdAt: {
-        $gte: startOfDay(new Date()),
-        $lte: endOfDay(new Date())
-    }
-}
+  createdAt: {
+    $gte: startOfDay(new Date()),
+    $lte: endOfDay(new Date())
+  }
+};
 
-export const recentOffersFirst = { createdAt: -1 as mongoose.SortOrder }
+export const recentOffersFirst = { createdAt: -1 as mongoose.SortOrder };
 
-export const offerPropsToPopulate = ['user', 'wallet', 'currency']
+export const offerPropsToPopulate = ['user', 'wallet', 'currency'];
 
 // schema definition
 export type OfferDocument = HydratedDocument<Offer>;
 
 @Schema({ timestamps: true })
 export class Offer {
-    @ApiProperty({ type: String, example: '64add33781674cb2b11a7e22' })
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-    user: User;
+  @ApiProperty({ type: String, example: '64add33781674cb2b11a7e22' })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  user: User;
 
-    @ApiProperty({ type: String, example: '64add33781674cb2b11a7e22' })
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Wallet' })
-    wallet: Wallet;
+  @ApiProperty({ type: String, example: '64add33781674cb2b11a7e22' })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Wallet' })
+  wallet: Wallet;
 
-    @ApiProperty({ type: String, example: '64add33781674cb2b11a7e22' })
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Currency' })
-    currency: Currency;
+  @ApiProperty({ type: String, example: '64add33781674cb2b11a7e22' })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Currency' })
+  currency: Currency;
 
-    @ApiProperty({ example: 3.5 })
-    @Prop()
-    amount: number;
+  @ApiProperty({ example: 3.5 })
+  @Prop()
+  amount: number;
 
-    @ApiProperty({ example: 1234.56 })
-    @Prop()
-    unitPrice: number;
+  @ApiProperty({ example: 1234.56 })
+  @Prop()
+  unitPrice: number;
 
-    @ApiProperty({ example: true })
-    @Prop({ select: false, default: true })
-    listed: boolean;
+  @ApiProperty({ example: true })
+  @Prop({ select: false, default: true })
+  listed: boolean;
 
-    @ApiProperty({ example: 0 })
-    @Prop({ select: false })
-    __v?: number;
+  @ApiProperty({ example: 0 })
+  @Prop({ select: false })
+  __v?: number;
 
-    @ApiProperty({ example: new Date() })
-    @Prop()
-    createdAt?: Date;
+  @ApiProperty({ example: new Date() })
+  @Prop()
+  createdAt?: Date;
 
-    @ApiProperty({ example: new Date() })
-    @Prop({ select: false })
-    updatedAt?: Date;
+  @ApiProperty({ example: new Date() })
+  @Prop({ select: false })
+  updatedAt?: Date;
 }
 
-export const OfferSchema = SchemaFactory.createForClass(Offer)
+export const OfferSchema = SchemaFactory.createForClass(Offer);

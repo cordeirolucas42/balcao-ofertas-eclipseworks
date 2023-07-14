@@ -15,24 +15,24 @@ export class DatabaseService implements OnModuleInit {
     @InjectModel(Wallet.name) private walletModel: Model<Wallet>,
     @InjectModel(Currency.name) private currencyModel: Model<Currency>,
     @InjectModel(Asset.name) private assetModel: Model<Asset>,
-    @InjectModel(Offer.name) private offerModel: Model<Offer>,
+    @InjectModel(Offer.name) private offerModel: Model<Offer>
   ) {}
-  
+
   async onModuleInit() {
     if (process.env.DB_SEED !== '1') {
-      return
+      return;
     }
 
     // seed DB
-    await this.seedDB()
+    await this.seedDB();
   }
 
   private async seedDB() {
-    await this.userModel.deleteMany({}).exec()
-    await this.walletModel.deleteMany({}).exec()
-    await this.currencyModel.deleteMany({}).exec()
-    await this.assetModel.deleteMany({}).exec()
-    await this.offerModel.deleteMany({}).exec()
+    await this.userModel.deleteMany({}).exec();
+    await this.walletModel.deleteMany({}).exec();
+    await this.currencyModel.deleteMany({}).exec();
+    await this.assetModel.deleteMany({}).exec();
+    await this.offerModel.deleteMany({}).exec();
 
     // CREATE CURRENCIES
     const currenciesSeed = [
@@ -40,11 +40,11 @@ export class DatabaseService implements OnModuleInit {
       { name: 'Dogecoin' },
       { name: 'Ethereum' },
       { name: 'Avalanche' },
-      { name: 'Zcash' },
-    ]
+      { name: 'Zcash' }
+    ];
 
     // SEED CURRENCY
-    const currencies = await this.currencyModel.insertMany(currenciesSeed)
+    const currencies = await this.currencyModel.insertMany(currenciesSeed);
 
     // CREATE USERS
     const usersSeed = [
@@ -57,22 +57,22 @@ export class DatabaseService implements OnModuleInit {
       {
         name: 'Simon Jackson'
       }
-    ]
+    ];
 
     // SEED USERS
-    const users = await this.userModel.insertMany(usersSeed)
+    const users = await this.userModel.insertMany(usersSeed);
 
     // CREATE WALLETS
     const walletsSeed: Wallet[] = [
-      { user: users[0], name: "Carteira 1" },
-      { user: users[0], name: "Carteira 2" },
-      { user: users[2], name: "Investimentos" },
-      { user: users[1], name: "Main wallet" },
-      { user: users[1], name: "Wallet savings" }
-    ]
+      { user: users[0], name: 'Carteira 1' },
+      { user: users[0], name: 'Carteira 2' },
+      { user: users[2], name: 'Investimentos' },
+      { user: users[1], name: 'Main wallet' },
+      { user: users[1], name: 'Wallet savings' }
+    ];
 
     // SEED WALLETS
-    const wallets = await this.walletModel.insertMany(walletsSeed)
+    const wallets = await this.walletModel.insertMany(walletsSeed);
 
     // CREATE ASSETS
     const assetsSeed: Asset[] = [
@@ -87,50 +87,169 @@ export class DatabaseService implements OnModuleInit {
       { wallet: wallets[3], currency: currencies[2], amount: 0.3 },
       { wallet: wallets[3], currency: currencies[4], amount: 0.3 },
       { wallet: wallets[4], currency: currencies[3], amount: 15 }
-    ]
+    ];
 
     // SEED ASSETS
-    const assets = await this.assetModel.insertMany(assetsSeed)
+    await this.assetModel.insertMany(assetsSeed);
 
     // CREATE OFFERS
     const offersSeed: Offer[] = [
-      { user: users[0], wallet: wallets[0], currency: currencies[0], amount: 1, unitPrice: 1234.56, listed: true },
-      { user: users[0], wallet: wallets[0], currency: currencies[1], amount: 0.15, unitPrice: 16197.56, listed: true },
-      { user: users[1], wallet: wallets[4], currency: currencies[3], amount: 10, unitPrice: 37833.24, listed: true },
-      { user: users[1], wallet: wallets[4], currency: currencies[3], amount: 0.5, unitPrice: 27827.25, listed: true },
-      { user: users[0], wallet: wallets[0], currency: currencies[1], amount: 1, unitPrice: 728278.42, listed: true },
-      { user: users[1], wallet: wallets[4], currency: currencies[3], amount: 0.5, unitPrice: 2787822.1, listed: true },
-      { user: users[0], wallet: wallets[0], currency: currencies[0], amount: 3, unitPrice: 75575.17, listed: true },
-      { user: users[0], wallet: wallets[0], currency: currencies[0], amount: 0.5, unitPrice: 57575.47, listed: true },
-      { user: users[0], wallet: wallets[0], currency: currencies[0], amount: 0.3, unitPrice: 757223.23, listed: true },
-      { user: users[2], wallet: wallets[2], currency: currencies[2], amount: 0.15, unitPrice: 34534.4747, listed: true },
-      { user: users[0], wallet: wallets[0], currency: currencies[1], amount: 0.01, unitPrice: 34557.24, listed: true },
-      { user: users[0], wallet: wallets[0], currency: currencies[2], amount: 0.1, unitPrice: 5757.67, listed: true },
-      { user: users[0], wallet: wallets[1], currency: currencies[3], amount: 5, unitPrice: 14141.76, listed: true },
-      { user: users[0], wallet: wallets[1], currency: currencies[4], amount: 1, unitPrice: 424242.75, listed: true },
-      { user: users[0], wallet: wallets[1], currency: currencies[4], amount: 0.2, unitPrice: 74447.74, listed: true },
-      { user: users[2], wallet: wallets[2], currency: currencies[2], amount: 0.01, unitPrice: 11441.74, listed: true },
-      { user: users[0], wallet: wallets[0], currency: currencies[0], amount: 2, unitPrice: 55445.75, listed: true },
-    ]
+      {
+        user: users[0],
+        wallet: wallets[0],
+        currency: currencies[0],
+        amount: 1,
+        unitPrice: 1234.56,
+        listed: true
+      },
+      {
+        user: users[0],
+        wallet: wallets[0],
+        currency: currencies[1],
+        amount: 0.15,
+        unitPrice: 16197.56,
+        listed: true
+      },
+      {
+        user: users[1],
+        wallet: wallets[4],
+        currency: currencies[3],
+        amount: 10,
+        unitPrice: 37833.24,
+        listed: true
+      },
+      {
+        user: users[1],
+        wallet: wallets[4],
+        currency: currencies[3],
+        amount: 0.5,
+        unitPrice: 27827.25,
+        listed: true
+      },
+      {
+        user: users[0],
+        wallet: wallets[0],
+        currency: currencies[1],
+        amount: 1,
+        unitPrice: 728278.42,
+        listed: true
+      },
+      {
+        user: users[1],
+        wallet: wallets[4],
+        currency: currencies[3],
+        amount: 0.5,
+        unitPrice: 2787822.1,
+        listed: true
+      },
+      {
+        user: users[0],
+        wallet: wallets[0],
+        currency: currencies[0],
+        amount: 3,
+        unitPrice: 75575.17,
+        listed: true
+      },
+      {
+        user: users[0],
+        wallet: wallets[0],
+        currency: currencies[0],
+        amount: 0.5,
+        unitPrice: 57575.47,
+        listed: true
+      },
+      {
+        user: users[0],
+        wallet: wallets[0],
+        currency: currencies[0],
+        amount: 0.3,
+        unitPrice: 757223.23,
+        listed: true
+      },
+      {
+        user: users[2],
+        wallet: wallets[2],
+        currency: currencies[2],
+        amount: 0.15,
+        unitPrice: 34534.4747,
+        listed: true
+      },
+      {
+        user: users[0],
+        wallet: wallets[0],
+        currency: currencies[1],
+        amount: 0.01,
+        unitPrice: 34557.24,
+        listed: true
+      },
+      {
+        user: users[0],
+        wallet: wallets[0],
+        currency: currencies[2],
+        amount: 0.1,
+        unitPrice: 5757.67,
+        listed: true
+      },
+      {
+        user: users[0],
+        wallet: wallets[1],
+        currency: currencies[3],
+        amount: 5,
+        unitPrice: 14141.76,
+        listed: true
+      },
+      {
+        user: users[0],
+        wallet: wallets[1],
+        currency: currencies[4],
+        amount: 1,
+        unitPrice: 424242.75,
+        listed: true
+      },
+      {
+        user: users[0],
+        wallet: wallets[1],
+        currency: currencies[4],
+        amount: 0.2,
+        unitPrice: 74447.74,
+        listed: true
+      },
+      {
+        user: users[2],
+        wallet: wallets[2],
+        currency: currencies[2],
+        amount: 0.01,
+        unitPrice: 11441.74,
+        listed: true
+      },
+      {
+        user: users[0],
+        wallet: wallets[0],
+        currency: currencies[0],
+        amount: 2,
+        unitPrice: 55445.75,
+        listed: true
+      }
+    ];
 
     // SEED OFFERS
-    await this.offerModel.insertMany(offersSeed)
+    await this.offerModel.insertMany(offersSeed);
 
-    // Log database into 'seedInfo.json' file    
-    const allUsers = await this.getAllUsers()
-    const allOffers = await this.getAllOffers()
+    // Log database into 'seedInfo.json' file
+    const allUsers = await this.getAllUsers();
+    const allOffers = await this.getAllOffers();
     const stringifiedData = JSON.stringify(
       { users: allUsers, offers: allOffers },
       undefined,
       2
-    )
-    await fs.writeFile('src/database/seedInfo.json', stringifiedData)
+    );
+    await fs.writeFile('src/database/seedInfo.json', stringifiedData);
 
     console.log('seed db');
   }
 
   private async getAllUsers() {
-    const propsToRemove = ['-__v', '-updatedAt']
+    const propsToRemove = ['-__v', '-updatedAt'];
     const allUsers = await this.userModel
       .find({})
       .select(propsToRemove)
@@ -146,13 +265,13 @@ export class DatabaseService implements OnModuleInit {
           }
         }
       })
-      .exec()
+      .exec();
 
-    return allUsers
+    return allUsers;
   }
 
   private async getAllOffers() {
-    const propsToRemove = ['-__v', '-updatedAt']
+    const propsToRemove = ['-__v', '-updatedAt'];
     const allOffers = await this.offerModel
       .find({})
       .select(propsToRemove)
@@ -168,10 +287,10 @@ export class DatabaseService implements OnModuleInit {
         {
           path: 'currency',
           select: propsToRemove
-        },
+        }
       ])
-      .exec()
+      .exec();
 
-    return allOffers
+    return allOffers;
   }
 }
