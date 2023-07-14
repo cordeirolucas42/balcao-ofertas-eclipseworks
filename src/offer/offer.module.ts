@@ -14,7 +14,7 @@ import { Wallet, WalletSchema } from '../database/model/wallet.schema';
       { name: Offer.name, schema: OfferSchema },
       { name: Wallet.name, schema: WalletSchema },
       { name: Currency.name, schema: CurrencySchema },
-      { name: Asset.name, schema: AssetSchema },
+      { name: Asset.name, schema: AssetSchema }
     ]),
     DatabaseModule
   ],

@@ -16,6 +16,15 @@ export class Asset {
 
     @Prop()
     amount: number
+
+    @Prop({ select: false })
+    __v?: number;
+
+    @Prop({ select: false })
+    createdAt?: Date;
+
+    @Prop({ select: false })
+    updatedAt?: Date;
 }
 
 export const AssetSchema = SchemaFactory.createForClass(Asset)

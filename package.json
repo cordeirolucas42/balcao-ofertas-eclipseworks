@@ -71,6 +71,17 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
+    "coveragePathIgnorePatterns": [
+      ".module.ts",
+      "/src/main.ts",
+      "/src/common/guards",
+      "/src/common/interceptors",
+      "/src/common/pipes",
+      "/src/database",
+      ".mock.ts",
+      ".dto.ts",
+      ".schema.ts"
+    ],
     "testEnvironment": "node"
   }
 }

@@ -10,6 +10,15 @@ export class Currency {
 
     @Prop()
     name: string;
+
+    @Prop({ select: false })
+    __v?: number;
+
+    @Prop({ select: false })
+    createdAt?: Date;
+
+    @Prop({ select: false })
+    updatedAt?: Date;
 }
 
 export const CurrencySchema = SchemaFactory.createForClass(Currency)

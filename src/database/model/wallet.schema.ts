@@ -14,6 +14,15 @@ export class Wallet {
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
     user: User;
+
+    @Prop({ select: false })
+    __v?: number;
+
+    @Prop({ select: false })
+    createdAt?: Date;
+
+    @Prop({ select: false })
+    updatedAt?: Date;
 }
 
 export const WalletSchema = SchemaFactory.createForClass(Wallet)

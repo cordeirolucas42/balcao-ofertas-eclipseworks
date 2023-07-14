@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Transform } from 'class-transformer'
 import { IsBoolean, IsInt, IsNumber, IsPositive, Validate } from 'class-validator'
 import { stringToBoolean, stringToNumber } from '../../common/dataTransformation'
-import { IsMongoObjectId } from '../../common/objectIdValidation.pipe'
+import { IsMongoObjectId } from '../../common/pipes/objectIdValidation.pipe'
 
 export class UserIdParam {
     @ApiProperty({ example: '64add33781674cb2b11a7e22' })
@@ -53,6 +53,53 @@ export class CreateOfferDTO {
     @IsNumber()
     @IsPositive()
     unitPrice: number
+}
+
+export class UserDTO {
+    @ApiProperty({ example: '64add33781674cb2b11a7e22' })
+    _id: string
+
+    @ApiProperty({ example: 'Joe Smith' })
+    name: string
+}
+
+export class WalletDTO {
+    @ApiProperty({ example: '64add33781674cb2b11a7e22' })
+    _id: string
+
+    @ApiProperty({ example: 'Wallet 1' })
+    name: string
+
+    @ApiProperty({ example: '64add33781674cb2b11a7e22' })
+    user: string
+}
+
+export class CurrencyDTO {
+    @ApiProperty({ example: '64add33781674cb2b11a7e22' })
+    _id: string
+
+    @ApiProperty({ example: 'Bitcoin' })
+    name: string
+}
+
+export class OfferDTO {
+    @ApiProperty({ type: UserDTO })
+    user: UserDTO
+
+    @ApiProperty({ type: WalletDTO })
+    wallet: WalletDTO
+
+    @ApiProperty({ type: CurrencyDTO })
+    currency: CurrencyDTO
+  
+    @ApiProperty({ example: 15 })
+    amount: number
+  
+    @ApiProperty({ example: 1245.65 })
+    unitPrice: number
+  
+    @ApiProperty({ example: new Date() })
+    createdAt: Date
 }
 
 export class OfferId {

@@ -10,6 +10,15 @@ export class User {
 
     @Prop()
     name: string;
+
+    @Prop({ select: false })
+    __v?: number;
+
+    @Prop({ select: false })
+    createdAt?: Date;
+
+    @Prop({ select: false })
+    updatedAt?: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)

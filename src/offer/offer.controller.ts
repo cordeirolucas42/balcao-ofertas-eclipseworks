@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Param, Post, Delete, Query } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Post, Delete, Query, HttpStatus } from '@nestjs/common';
+import { ApiBadRequestResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { OfferService } from './offer.service';
-import { CreateOfferDTO, ListOffersParams, OfferId, UnlistOfferParam, UserIdParam } from './model/offer.dto';
+import { CreateOfferDTO, ListOffersParams, OfferDTO, OfferId, UnlistOfferParam, UserIdParam } from './model/offer.dto';
 import { Offer } from './model/offer.schema';
 import { Paginated } from '../common/pagination';
 
@@ -13,7 +13,8 @@ export class OfferController {
   ) {}
 
   @Get()
-  @ApiResponse({ isArray: true, type: Offer })
+  @ApiOkResponse({ isArray: true, type: OfferDTO })
+  @ApiBadRequestResponse({ description: 'Incorrect parameter types' })
   async listOffers(
     @Query() { userId }: UserIdParam,
     @Query() listOffersParams: ListOffersParams
@@ -22,15 +23,24 @@ export class OfferController {
   }
 
   @Post()
-  @ApiResponse({ type: OfferId })
+  @ApiOkResponse({ type: Offer })
+  @ApiBadRequestResponse({ description: 'Incorrect parameter or body types' })
+  @ApiNotFoundResponse({ description: 'There is no document with Id' })
+  @ApiUnauthorizedResponse({ description: 'User does not own wallet' })
+  @ApiForbiddenResponse({ description: 'Maximum amount of offers created per day reached' })
+  @ApiForbiddenResponse({ description: 'Not enough balance' })
   async createOffer(
     @Query() { userId }: UserIdParam,
     @Body() createOfferDTO: CreateOfferDTO
-  ): Promise<OfferId> {
+  ): Promise<Offer> {
     return this.offerService.createOffer(userId, createOfferDTO)
   }
 
   @Delete(':offerId')
+  @ApiOkResponse({ description: 'Offer removed successfully' })
+  @ApiBadRequestResponse({ description: 'Incorrect parameter types' })
+  @ApiNotFoundResponse({ description: 'There is no offer with Id' })
+  @ApiUnauthorizedResponse({ description: 'User does not own offer' })
   async unlistOffer(
     @Query() { userId }: UserIdParam,
     @Param() { offerId }: UnlistOfferParam
